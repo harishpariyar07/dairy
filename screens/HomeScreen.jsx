@@ -2,8 +2,16 @@ import React, { useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import {screens} from '../config/navConfig'
 
+
+const screens = [
+  { name: 'Add Farmer', component: 'AddFarmer' },
+  { name: 'Collect Milk', component: 'CollectMilk' },
+  { name: 'Rate Chart', component: 'RateChart' },
+  { name: 'Payments', component: 'Payments' },
+  { name: 'Dues', component: 'Dues' },
+  { name: 'Ledger', component: 'Ledger' }
+];
 
 const HomeScreen = () => {
   const navigator = useNavigation();
