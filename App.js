@@ -1,5 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { PaperProvider } from 'react-native-paper';
+import { useFonts } from 'expo-font';
 
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
@@ -26,17 +28,30 @@ const screens = [
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  const [loaded] = useFonts({
+    Inter: require('./assets/fonts/Inter-Medium.ttf'),
+    InterB: require('./assets/fonts/Inter-Bold.ttf'),
+    LeagueSB: require('./assets/fonts/LeagueSpartan-Bold.ttf')
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {screens.map((screen) => (
-          <Stack.Screen
-            key={screen.name}
-            name={screen.name}
-            component={screen.component}
-          />
-        ))}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {screens.map((screen) => (
+            <Stack.Screen
+              key={screen.name}
+              name={screen.name}
+              component={screen.component}
+            />
+          ))}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
