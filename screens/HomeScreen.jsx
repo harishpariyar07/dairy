@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { DataTable } from 'react-native-paper';
+import {
+  DataTable,
+  Searchbar,
+  FAB
+} from 'react-native-paper';
 
 import AddFarmerImg from '../assets/icons/addFarmer.png'
 import CollectMilkImg from '../assets/icons/collectMilk.png';
@@ -47,9 +51,10 @@ const HomeScreen = () => {
   const month = currentDate.getMonth() + 1
   const day = currentDate.getDate();
 
+  const [search, setSearch] = useState('')
+
   return (
     <SafeAreaView style={styles.container}>
-
       <StatusBar style='auto' />
 
       <View style={styles.upperContainer}>
@@ -60,8 +65,6 @@ const HomeScreen = () => {
         <Text style={styles.dayText}>
           {`${day}-${month}-${year}`}
         </Text>
-
-
 
         <DataTable style={styles.table}>
           <DataTable.Header>
@@ -75,24 +78,45 @@ const HomeScreen = () => {
             <DataTable.Cell><Text style={styles.tableData}>8.03</Text></DataTable.Cell>
           </DataTable.Row>
         </DataTable>
-
       </View>
 
+      <Searchbar
+        placeholder='Search'
+        onChangeText={(e) => setSearch(e)}
+        value={search}
+        style={{
+          margin: 10,
+          backgroundColor: '#f0f0f0',
+          borderRadius: 30,
+          borderColor: '#edebeb',
+          borderWidth: 2,
+        }}
+      />
+
       <ScrollView style={styles.scrollContainer}>
+
+
         <View style={styles.bottomContainer}>
-          {screens.map(({ name, component, image }) => (
-            <TouchableOpacity
-              key={component}
-              style={styles.button}
-              onPress={() => handleNavigation(component)}
-            >
-              <Image source={image} style={styles.icon} />
-              <Text style={styles.btnText}>{name}</Text>
-            </TouchableOpacity>
-          ))}
+          {screens
+            .filter(({ name }) => name.toLowerCase().includes(search.toLowerCase()))
+            .map(({ name, component, image }) => (
+              <TouchableOpacity
+                key={component}
+                style={styles.button}
+                onPress={() => handleNavigation(component)}
+              >
+                <Image source={image} style={styles.icon} />
+                <Text style={styles.btnText}>{name}</Text>
+              </TouchableOpacity>
+            ))}
         </View>
       </ScrollView>
 
+      <FAB
+        icon={{ uri: 'https://img.icons8.com/material-sharp/24/FFFFFF/user.png' }}
+        style={styles.fab}
+        onPress={() => console.log('Pressed')}
+      />
 
     </SafeAreaView>
   );
@@ -111,11 +135,18 @@ const styles = StyleSheet.create({
     width: "46%",
     marginVertical: 6,
     borderRadius: 10,
-    backgroundColor: '#e9edf7'
+    backgroundColor: '#e1e8fa',
+    shadowColor: "#babbbf",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   upperContainer: {
-    // flex: 1,
-    paddingTop: 80,
+    paddingTop: 70,
     paddingBottom: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -130,6 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around"
   },
   scrollContainer: {
+    width: '100%',
     flex: 1
   },
   icon: {
@@ -139,7 +171,8 @@ const styles = StyleSheet.create({
   },
   btnText: {
     padding: 10,
-    fontFamily: 'Inter'
+    fontFamily: 'Inter',
+    color: '#1f4fc2'
   },
   dayText: {
     fontFamily: 'LeagueSB',
@@ -150,13 +183,26 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 20,
   },
-  tableData : {
-    color: '#fff'
+  tableData: {
+    color: '#fff',
   },
-  tableHead : {
+  tableHead: {
     color: '#fff',
     fontFamily: 'InterB',
-  }
+  },
+  fab: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    backgroundColor: '#6987d0',
+    borderRadius: 50,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
 });
 
 export default HomeScreen;
