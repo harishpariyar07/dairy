@@ -12,14 +12,18 @@ import Dues from './screens/Dues';
 import Ledger from './screens/Ledger';
 import Payments from './screens/Payments';
 import RateChart from './screens/RateChart';
+import AddFarmerDetails from './screens/AddFarmerDetails';
+import AddRateDetails from './screens/AddRateDetails';
 
 const screens = [
   { name: 'LoginScreen', component: LoginScreen },
   { name: 'SignUpScreen', component: SignUpScreen },
   { name: 'HomeScreen', component: HomeScreen },
   { name: 'AddFarmer', component: AddFarmer },
+  { name: 'AddFarmerDetails', component: AddFarmerDetails },
   { name: 'CollectMilk', component: CollectMilk },
   { name: 'RateChart', component: RateChart },
+  { name: 'AddRateDetails', component: AddRateDetails },
   { name: 'Payments', component: Payments },
   { name: 'Dues', component: Dues },
   { name: 'Ledger', component: Ledger }
