@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { Button, Searchbar, IconButton, MD3Colors } from 'react-native-paper';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -70,6 +70,7 @@ const AddFarmer = () => {
         mode='contained'
         onPress={() => navigator.navigate(AddFarmerDetails)}
         style={styles.button}
+        buttonColor='#6987d0'
       >
         Add farmer
       </Button>
@@ -81,6 +82,7 @@ const styles = {
   container: {
     flex: 1,
     marginBottom: 2,
+    padding: 10
   },
   item: {
     backgroundColor: 'white',

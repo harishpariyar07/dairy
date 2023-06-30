@@ -44,7 +44,9 @@ export default function App() {
   }
 
   return (
-    <PaperProvider>
+    <PaperProvider style={{
+      fontFamily: 'Inter'
+    }}>
       <NavigationContainer>
         <Stack.Navigator>
           {screens.map((screen) => (

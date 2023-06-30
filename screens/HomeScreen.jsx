@@ -89,7 +89,7 @@ const HomeScreen = () => {
           backgroundColor: '#f0f0f0',
           borderRadius: 30,
           borderColor: '#edebeb',
-          borderWidth: 2,
+          borderWidth: 2
         }}
       />
 
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    width: "100%",
   },
   button: {
     height: 130,
