@@ -1,9 +1,9 @@
-import { View, Text } from 'react-native';
-import React, { useState, useLayoutEffect } from 'react';
-import { Button, Searchbar, IconButton, MD3Colors } from 'react-native-paper';
-import { FlatList } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AddFarmerDetails from './AddFarmerDetails';
+import { View, Text } from 'react-native'
+import React, { useState, useLayoutEffect } from 'react'
+import { Button, Searchbar, IconButton, MD3Colors } from 'react-native-paper'
+import { FlatList } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import AddFarmerDetails from './AddFarmerDetails'
 
 const DATA = [
   {
@@ -18,7 +18,7 @@ const DATA = [
     phone: '9867185525',
     level: 2,
   },
-];
+]
 
 const Item = ({ id, name, level, phone }) => (
   <View style={styles.item}>
@@ -37,11 +37,11 @@ const Item = ({ id, name, level, phone }) => (
       onPress={() => console.log('Farmer details deleted')}
     />
   </View>
-);
+)
 
 const AddFarmer = () => {
-  const [search, setSearch] = useState('');
-  const navigator = useNavigation();
+  const [search, setSearch] = useState('')
+  const navigator = useNavigation()
 
   return (
     <View style={styles.container}>
@@ -75,14 +75,14 @@ const AddFarmer = () => {
         Add farmer
       </Button>
     </View>
-  );
-};
+  )
+}
 
 const styles = {
   container: {
     flex: 1,
     marginBottom: 2,
-    padding: 10
+    padding: 10,
   },
   item: {
     backgroundColor: 'white',
@@ -104,5 +104,5 @@ const styles = {
   button: {
     padding: 4,
   },
-};
-export default AddFarmer;
+}
+export default AddFarmer
