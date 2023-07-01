@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { TextInput, Button } from 'react-native-paper'
-import Select from 'react-select'
+import { TextInput, Button, useTheme } from 'react-native-paper'
+import DropDown from 'react-native-paper-dropdown'
 
 const levelOptions = [
   { value: 'level1', label: 'Level 1' },
@@ -10,69 +10,124 @@ const levelOptions = [
   { value: 'level4', label: 'Level 4' },
 ]
 
+const paymentOptions = [
+  { value: 'cash', label: 'Cash' },
+  { value: 'cheque', label: 'Cheque' },
+  { value: 'bank', label: 'Bank' },
+]
+
 const AddFarmerDetails = () => {
-  const [text, setText] = useState('')
-  const [selectedOption, setSelectedOption] = useState(null)
+  const [farmerId, setFarmerId] = useState('')
+  const [rfId, setRfId] = useState('')
+  const [mobileNumber, setMobileNumber] = useState('')
+  const [farmerName, setFarmerName] = useState('')
+  const [levelOption, setLevelOption] = useState('')
+  const [paymentOption, setPaymentOption] = useState('')
+  const [bankName, setBankName] = useState('')
+  const [bankAccountNumber, setBankAccountNumber] = useState('')
+  const [bankHolderName, setBankHolderName] = useState('')
+  const [bankIFSC, setBankIFSC] = useState('')
+  const [showDropDown1, setShowDropDown1] = useState(false)
+  const [showDropDown2, setShowDropDown2] = useState(false)
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <TextInput
           label='Farmer ID'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={farmerId}
+          onChangeText={(id) => setFarmerId(id)}
           selectionColor='black'
           style={styles.textInput}
         />
         <TextInput
           label='RFID'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={rfId}
+          onChangeText={(id) => setRfId(id)}
           selectionColor='black'
           style={styles.textInput}
         />
         <TextInput
           label='Mobile Number'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={mobileNumber}
+          onChangeText={(num) => setMobileNumber(num)}
           selectionColor='black'
           style={styles.textInput}
         />
         <TextInput
           label='Farmer Name'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={farmerName}
+          onChangeText={(name) => setFarmerName(name)}
           selectionColor='black'
           style={styles.textInput}
         />
 
-        {/* <Select options={levelOptions} defaultValue={selectedOption} onChange={setSelectedOption} /> */}
+        <DropDown
+          label={'Farmer Level'}
+          mode={'flat'}
+          visible={showDropDown1}
+          showDropDown={() => setShowDropDown1(true)}
+          onDismiss={() => setShowDropDown1(false)}
+          value={levelOption}
+          setValue={setLevelOption}
+          list={levelOptions}
+          dropDownStyle={styles.dropStyle}
+          dropDownItemStyle={styles.dropDownStyle}
+          dropDownItemSelectedStyle={styles.dropDownStyle}
+          inputProps={{
+            style: {
+              backgroundColor: 'white',
+              padding: 4,
+            },
+          }}
+        />
+
+        <DropDown
+          label={'Payment Mode'}
+          mode={'flat'}
+          visible={showDropDown2}
+          showDropDown={() => setShowDropDown2(true)}
+          onDismiss={() => setShowDropDown2(false)}
+          value={paymentOption}
+          setValue={setPaymentOption}
+          list={paymentOptions}
+          dropDownStyle={styles.dropStyle}
+          dropDownItemStyle={styles.dropDownStyle}
+          dropDownItemSelectedStyle={styles.dropDownStyle}
+          inputProps={{
+            style: {
+              backgroundColor: 'white',
+              padding: 4,
+              color: 'red',
+            },
+          }}
+        />
 
         <TextInput
           label='Bank Name'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={bankName}
+          onChangeText={(name) => setBankName(name)}
           selectionColor='black'
           style={styles.textInput}
         />
         <TextInput
-          label='Bank Account Name'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          label='Bank Account Number'
+          value={bankAccountNumber}
+          onChangeText={(text) => setBankAccountNumber(text)}
           selectionColor='black'
           style={styles.textInput}
         />
         <TextInput
           label='Bank Holder Name'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={bankHolderName}
+          onChangeText={(name) => setBankHolderName(name)}
           selectionColor='black'
           style={styles.textInput}
         />
         <TextInput
           label='Bank IFSC'
-          value={text}
-          onChangeText={(text) => setText(text)}
+          value={bankIFSC}
+          onChangeText={(ifsc) => setBankIFSC(ifsc)}
           selectionColor='black'
           style={styles.textInput}
         />
@@ -101,6 +156,10 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 4,
+  },
+  dropDownStyle: {
+    backgroundColor: 'white',
+    color: 'blue',
   },
 })
 
