@@ -1,13 +1,13 @@
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { Button, IconButton, MD3Colors } from 'react-native-paper';
-import { FlatList } from 'react-native';
-import AddRateDetails from './AddRateDetails';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native'
+import React, { useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import { Button, IconButton, MD3Colors } from 'react-native-paper'
+import { FlatList } from 'react-native'
+import AddRateDetails from './AddRateDetails'
 
 const RateChart = () => {
-  const navigator = useNavigation();
-  const [search, setSearch] = useState('');
+  const navigator = useNavigation()
+  const [search, setSearch] = useState('')
 
   const data = [
     {
@@ -24,7 +24,7 @@ const RateChart = () => {
       level: 1,
       type: 'BUFFALO',
     },
-  ];
+  ]
 
   const Item = ({ category, name, level, type }) => (
     <View style={styles.item}>
@@ -51,7 +51,7 @@ const RateChart = () => {
         onPress={() => console.log('Rate chart deleted')}
       />
     </View>
-  );
+  )
 
   return (
     <SafeAreaView style={styles.container}>
@@ -78,8 +78,8 @@ const RateChart = () => {
         Add Rate Chart
       </Button>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -106,6 +106,6 @@ const styles = StyleSheet.create({
   button: {
     padding: 4,
   },
-});
+})
 
-export default RateChart;
+export default RateChart

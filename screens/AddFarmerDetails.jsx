@@ -1,18 +1,18 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-import { TextInput, Button } from 'react-native-paper';
-import Select from 'react-select';
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import React, { useState } from 'react'
+import { TextInput, Button } from 'react-native-paper'
+import Select from 'react-select'
 
 const levelOptions = [
   { value: 'level1', label: 'Level 1' },
   { value: 'level2', label: 'Level 2' },
   { value: 'level3', label: 'Level 3' },
   { value: 'level4', label: 'Level 4' },
-];
+]
 
 const AddFarmerDetails = () => {
-  const [text, setText] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [text, setText] = useState('')
+  const [selectedOption, setSelectedOption] = useState(null)
 
   return (
     <View style={styles.container}>
@@ -87,8 +87,8 @@ const AddFarmerDetails = () => {
         Save
       </Button>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -102,6 +102,6 @@ const styles = StyleSheet.create({
   button: {
     padding: 4,
   },
-});
+})
 
-export default AddFarmerDetails;
+export default AddFarmerDetails

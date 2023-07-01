@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-import { TextInput, Button } from 'react-native-paper';
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import React, { useState } from 'react'
+import { TextInput, Button } from 'react-native-paper'
 
 const AddRateDetails = () => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState('')
 
   return (
     <View style={styles.container}>
@@ -69,8 +69,8 @@ const AddRateDetails = () => {
         Save
       </Button>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
   button: {
     padding: 4,
   },
-});
+})
 
-export default AddRateDetails;
+export default AddRateDetails
