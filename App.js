@@ -14,6 +14,7 @@ import Payments from './screens/Payments';
 import RateChart from './screens/RateChart';
 import AddFarmerDetails from './screens/AddFarmerDetails';
 import AddRateDetails from './screens/AddRateDetails';
+import AddCollection from './screens/AddCollection';
 
 const screens = [
   { name: 'LoginScreen', component: LoginScreen },
@@ -22,11 +23,12 @@ const screens = [
   { name: 'AddFarmer', component: AddFarmer },
   { name: 'AddFarmerDetails', component: AddFarmerDetails },
   { name: 'CollectMilk', component: CollectMilk },
+  { name: 'AddCollection', component: AddCollection },
   { name: 'RateChart', component: RateChart },
   { name: 'AddRateDetails', component: AddRateDetails },
   { name: 'Payments', component: Payments },
   { name: 'Dues', component: Dues },
-  { name: 'Ledger', component: Ledger }
+  { name: 'Ledger', component: Ledger },
 ];
 
 const Stack = createNativeStackNavigator();
