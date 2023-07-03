@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  SafeAreaView
 } from 'react-native';
 import React, { useLayoutEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +10,7 @@ import { Button, Searchbar, SegmentedButtons } from 'react-native-paper';
 import { Table, Row } from 'react-native-table-component';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const CollectMilk = () => {
 
@@ -240,7 +240,6 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    top: 15,
   },
   container3: {
     flex: 1,
@@ -248,22 +247,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     bottom: 10,
-    top: 5,
     gap: 10,
   },
   container2: {
     flex: 3.8,
     width: '95%',
     top: 10,
-    bottom: 10
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   calender: {
     flex: 0.3,
     alignItems: 'center',
-    justifyContent: 'center',
     top: 0,
     flexDirection: 'row',
-    gap: 40,
+    justifyContent: 'space-between',
+    gap: 40
   },
   // This only works on iOS
   datePicker: {

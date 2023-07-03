@@ -4,22 +4,22 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Table, Row } from 'react-native-table-component';
 import { Button } from 'react-native-paper'
 
+const DATA = [
+  {
+    "farmerID": "100",
+    "farmerName": "Ayush",
+    "netBalance": "5000"
+  },
+  {
+    "farmerID": "101",
+    "farmerName": "Bhola",
+    "netBalance": "3000"
+  }
+]
+
+const totalBal = DATA.reduce((acc, item) => acc + parseInt(item.netBalance), 0)
+
 const Dues = () => {
-
-  const DATA = [
-    {
-      "farmerID": "100",
-      "farmerName": "Ayush",
-      "netBalance": "5000"
-    },
-    {
-      "farmerID": "101",
-      "farmerName": "Bhola",
-      "netBalance": "3000"
-    }
-  ]
-
-  const totalBal = DATA.reduce((acc, item) => acc + parseInt(item.netBalance), 0)
 
   const tableHead = [
     { label: 'Farmer Id', width: 100 },
