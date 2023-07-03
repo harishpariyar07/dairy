@@ -195,6 +195,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 12,
+    fontFamily: 'InterB'
   },
   row: {
     height: 45,
@@ -210,6 +212,8 @@ const styles = StyleSheet.create({
   text: {
     margin: 6,
     textAlign: 'center',
+    fontSize: 12,
+    fontFamily: 'Inter'
   },
   button: {
     width: '90%',
