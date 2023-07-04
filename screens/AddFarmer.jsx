@@ -82,7 +82,6 @@ const styles = {
   container: {
     flex: 1,
     marginBottom: 2,
-    padding: 10,
   },
   item: {
     backgroundColor: 'white',
