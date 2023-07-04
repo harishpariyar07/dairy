@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { TextInput, Button, useTheme } from 'react-native-paper'
 import DropDown from 'react-native-paper-dropdown'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const levelOptions = [
   { value: 'level1', label: 'Level 1' },
@@ -31,7 +32,7 @@ const AddFarmerDetails = () => {
   const [showDropDown2, setShowDropDown2] = useState(false)
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <TextInput
           label='Farmer ID'
@@ -141,7 +142,7 @@ const AddFarmerDetails = () => {
       >
         Save
       </Button>
-    </View>
+    </SafeAreaView>
   )
 }
 

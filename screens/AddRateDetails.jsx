@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { TextInput, Button } from 'react-native-paper'
 import DropDown from 'react-native-paper-dropdown'
 import { RadioButton } from 'react-native-paper'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const typeOptions = [
   { value: 'kgfat+kgsnf', label: 'KGFAT + KGSNF' },
@@ -47,7 +48,7 @@ const AddRateDetails = () => {
   const [snfIncrement, setSnfIncrement] = useState(0)
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <DropDown
           label={'ENTER TYPE'}
@@ -260,7 +261,7 @@ const AddRateDetails = () => {
       >
         Save
       </Button>
-    </View>
+    </SafeAreaView>
   )
 }
 

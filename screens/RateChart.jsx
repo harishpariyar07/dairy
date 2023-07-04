@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Button, IconButton, MD3Colors } from 'react-native-paper'
 import { FlatList } from 'react-native'
 import AddRateDetails from './AddRateDetails'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const RateChart = () => {
   const navigator = useNavigation()

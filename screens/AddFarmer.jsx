@@ -1,9 +1,10 @@
 import { View, Text } from 'react-native'
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 import { Button, Searchbar, IconButton, MD3Colors } from 'react-native-paper'
 import { FlatList } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import AddFarmerDetails from './AddFarmerDetails'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const DATA = [
   {
@@ -44,7 +45,7 @@ const AddFarmer = () => {
   const navigator = useNavigation()
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Searchbar
         placeholder='Search'
         onChangeText={(e) => setSearch(e)}
@@ -74,7 +75,7 @@ const AddFarmer = () => {
       >
         Add farmer
       </Button>
-    </View>
+    </SafeAreaView>
   )
 }
 
