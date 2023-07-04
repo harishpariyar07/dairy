@@ -66,6 +66,7 @@ const RateChart = () => {
             key={item.name}
           />
         )}
+        key={(item) => item.id}
         keyExtractor={(item) => item.id}
       />
 
@@ -105,6 +106,7 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 4,
+    backgroundColor: '#6987d0',
   },
 })
 
