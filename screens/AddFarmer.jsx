@@ -1,41 +1,36 @@
 import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Searchbar, IconButton, MD3Colors } from 'react-native-paper'
 import { FlatList } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import AddFarmerDetails from './AddFarmerDetails'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import axios from 'axios'
 
-const DATA = [
-  {
-    id: 1,
-    name: 'Harish Pariyar',
-    phone: '9821500061',
-    level: 1,
-  },
-  {
-    id: 2,
-    name: 'Kiran Poudel',
-    phone: '9867185525',
-    level: 2,
-  },
-]
+const deleteFarmer = async (farmerId) => {
+  try {
+    const res = await axios.delete(`http://172.16.54.237:5001/api/farmer/${farmerId}`)
+    alert('Farmer Deleted Successfully')
+  } catch (error) {
+    console.warn(error)
+  }
+}
 
-const Item = ({ id, name, level, phone }) => (
+const Item = ({ farmerId, farmerName, farmerLevel, mobileNumber }) => (
   <View style={styles.item}>
     <View style={styles.icon}>
       <IconButton icon='account' iconColor={MD3Colors.error50} size={20} />
     </View>
     <View>
-      <Text style={styles.name}>{name}</Text>
-      <Text>{phone}</Text>
+      <Text style={styles.name}>{farmerName}</Text>
+      <Text>{mobileNumber}</Text>
     </View>
-    <Text>Level {level}</Text>
+    <Text>Level {farmerLevel}</Text>
     <IconButton
       icon='delete'
       iconColor={MD3Colors.error50}
       size={20}
-      onPress={() => console.log('Farmer details deleted')}
+      onPress={() => deleteFarmer(farmerId)}
     />
   </View>
 )
@@ -43,6 +38,21 @@ const Item = ({ id, name, level, phone }) => (
 const AddFarmer = () => {
   const [search, setSearch] = useState('')
   const navigator = useNavigation()
+
+  const [farmerData, setFarmerData] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://172.16.54.237:5001/api/farmer')
+        setFarmerData(response.data)
+      } catch (error) {
+        console.warn(error)
+      }
+    }
+
+    fetchData()
+  }, [farmerData])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,11 +69,18 @@ const AddFarmer = () => {
       />
 
       <FlatList
-        data={DATA.filter(({ name }) => name.toLowerCase().includes(search.toLowerCase()))}
-        renderItem={({ item }) => (
-          <Item id={item.id} name={item.name} level={item.level} phone={item.phone} />
+        data={farmerData.filter(({ farmerName }) =>
+          farmerName.toLowerCase().includes(search.toLowerCase())
         )}
-        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <Item
+            farmerId={item.farmerId}
+            farmerName={item.farmerName}
+            farmerLevel={item.farmerLevel}
+            mobileNumber={item.mobileNumber}
+          />
+        )}
+        keyExtractor={(item) => item.farmerId}
       />
 
       <Button
