@@ -4,7 +4,6 @@ import { Button, PaperProvider, Text } from 'react-native-paper';
 import { useFonts } from 'expo-font';
 
 import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import AddFarmer from './screens/AddFarmer';
 import CollectMilk from './screens/CollectMilk';
@@ -13,9 +12,10 @@ import Ledger from './screens/Ledger';
 import Payments from './screens/Payments';
 import RateChart from './screens/RateChart';
 import AddFarmerDetails from './screens/AddFarmerDetails';
-import AddRateDetails from './screens/AddRateDetails';
 import AddCollection from './screens/AddCollection';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import AddRateChart from './screens/AddRateChart';
+import EditCollection from './screens/EditCollection';
 
 const screens = [
   { name: 'HomeScreen', component: HomeScreen },
@@ -23,12 +23,12 @@ const screens = [
   { name: 'AddFarmerDetails', component: AddFarmerDetails },
   { name: 'CollectMilk', component: CollectMilk },
   { name: 'AddCollection', component: AddCollection },
+  { name: 'EditCollection', component: EditCollection },
   { name: 'RateChart', component: RateChart },
-  { name: 'AddRateDetails', component: AddRateDetails },
+  { name: 'AddRateChart', component: AddRateChart },
   { name: 'Payments', component: Payments },
   { name: 'Dues', component: Dues },
   { name: 'Ledger', component: Ledger },
-  { name: 'RegisterScreen', component: RegisterScreen },
 ];
 
 const Stack = createNativeStackNavigator();
@@ -43,6 +43,7 @@ const AuthenticatedStack = () => {
           name={screen.name}
           component={screen.component}
           options={screen.name === 'HomeScreen' && {
+            headerTitle: 'HAMROO DAIRY USER',
             headerRight: () => <Button onPress={onLogout} title="Logout" > <Text>Logout</Text> </Button>,
           }}
         />
@@ -54,7 +55,6 @@ const AuthenticatedStack = () => {
 const NonAuthenticatedStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="LoginScreen" component={LoginScreen} />
-    <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
   </Stack.Navigator>
 );
 

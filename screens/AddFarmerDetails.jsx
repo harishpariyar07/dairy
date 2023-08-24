@@ -1,15 +1,19 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TextInput, Button, useTheme } from 'react-native-paper'
 import DropDown from 'react-native-paper-dropdown'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import axios from 'axios'
+import { useNavigation } from '@react-navigation/native'
+import { URL } from '@env'
+import { useAuth } from '../context/AuthContext'
 
 const farmerLevelOptions = [
   { value: 1, label: 'Level 1' },
   { value: 2, label: 'Level 2' },
   { value: 3, label: 'Level 3' },
   { value: 4, label: 'Level 4' },
+  { value: 5, label: 'Level 5 (Fixed Rate)' },
 ]
 
 const paymentModeOptions = [
@@ -19,35 +23,69 @@ const paymentModeOptions = [
 ]
 
 const AddFarmerDetails = () => {
-  const [farmerId, setFarmerId] = useState('')
+  const [farmerId, setFarmerId] = useState(-1)
   const [rfid, setRfId] = useState('')
   const [mobileNumber, setMobileNumber] = useState('')
   const [farmerName, setFarmerName] = useState('')
   const [farmerLevel, setFarmerLevel] = useState(0)
+  const [fixedRate, setFixedRate] = useState(0)
   const [paymentMode, setPaymentMode] = useState('')
   const [bankName, setBankName] = useState('')
   const [accountNumber, setAccountNumber] = useState('')
   const [bankHolderName, setBankHolderName] = useState('')
   const [showDropDown1, setShowDropDown1] = useState(false)
   const [showDropDown2, setShowDropDown2] = useState(false)
+  const navigator = useNavigation()
+  const {
+    authState: { username },
+  } = useAuth()
 
-  const addFarmer = () => {
+  useEffect(() => {
+    const fetchLatestFarmerId = async () => {
+      try {
+        if (username) {
+          const res = await axios.get(`${URL}user/${username}/farmer/latestid`)
+          setFarmerId(res.data + 1)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchLatestFarmerId()
+  }, [])
+
+  const addFarmer = async () => {
     try {
-      const res = axios.post('http://172.16.54.237:5001/api/farmer', {
-        farmerId,
-        rfid,
-        mobileNumber,
-        farmerName,
-        farmerLevel,
-        paymentMode,
-        bankName,
-        accountNumber,
-        bankHolderName,
-      })
+      if (username) {
+        const res = await axios.post(`${URL}user/${username}/farmer`, {
+          farmerId,
+          rfid,
+          mobileNumber,
+          farmerName,
+          farmerLevel,
+          paymentMode,
+          bankName,
+          accountNumber,
+          bankHolderName,
+          fixedRate,
+        })
 
-      alert('Farmer Details Saved Successfully')
-      navigator.navigate('AddFarmer')
+        setAccountNumber('')
+        setBankHolderName('')
+        setBankName('')
+        setFarmerId(farmerId + 1)
+        setFarmerLevel(null)
+        setFarmerName('')
+        setFixedRate(0)
+        setMobileNumber('')
+        setPaymentMode('')
+        setRfId('')
+        setPaymentMode('')
+        alert('Farmer Details Saved Successfully')
+      }
     } catch (error) {
+      alert('Error in saving farmer details')
       console.log(error)
     }
   }
@@ -55,13 +93,16 @@ const AddFarmerDetails = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <TextInput
-          label='Farmer ID'
-          value={farmerId}
-          onChangeText={(id) => setFarmerId(id)}
-          selectionColor='black'
-          style={styles.textInput}
-        />
+        {farmerId >= 1 && (
+          <TextInput
+            label='Farmer ID'
+            defaultValue={String(farmerId)}
+            editable={false}
+            selectionColor='black'
+            style={styles.textInput}
+          />
+        )}
+
         <TextInput
           label='RFID'
           value={rfid}
@@ -103,6 +144,17 @@ const AddFarmerDetails = () => {
             },
           }}
         />
+
+        {farmerLevel === 5 && (
+          <TextInput
+            label='Fixed Rate'
+            value={fixedRate.toString()}
+            onChangeText={(rate) => setFixedRate(rate)}
+            selectionColor='black'
+            style={styles.textInput}
+            keyboardType='numeric'
+          />
+        )}
 
         <DropDown
           label={'Payment Mode'}

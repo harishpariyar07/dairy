@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
+import { URL } from '@env'
 
 const TOKEN_KEY = 'dairy-token'
-export const API_URL = 'http://172.16.54.237:5001/api/'
+const USER_NAME = 'dairy-user-name'
 const AuthContext = createContext({})
 
 export const useAuth = () => {
@@ -14,17 +15,20 @@ export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     token: null,
     authenticated: null,
+    username: null,
   })
 
   useEffect(() => {
     const loadToken = async () => {
       const token = await SecureStore.getItemAsync(TOKEN_KEY)
+      const userName = await SecureStore.getItemAsync(USER_NAME)
       if (token) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
         setAuthState({
           token: token,
           authenticated: true,
+          username: userName,
         })
       }
     }
@@ -32,44 +36,23 @@ export const AuthProvider = ({ children }) => {
     loadToken()
   }, [])
 
-  const register = async (phoneNo, name, password, confirmPassword) => {
+  const login = async (username, password) => {
     try {
-      if (phoneNo && name && password && confirmPassword) {
-        if (password === confirmPassword) {
-          const res = await axios.post(`${API_URL}user/signup`, {
-            phoneNo,
-            name,
-            password,
-          })
-
-          return res
-        } else {
-          return { error: true, message: 'Passwords do not match' }
-        }
-      } else {
-        return { error: true, message: 'Fill all the fields' }
-      }
-    } catch (error) {
-      return { error: true, message: error.message }
-    }
-  }
-
-  const login = async (phoneNo, password) => {
-    try {
-      if (phoneNo.length > 0 && password.length > 0) {
-        const res = await axios.post(`${API_URL}user/login`, {
-          phoneNo,
+      if (username && username.length > 0 && password && password.length > 0) {
+        const res = await axios.post(`${URL}user/login`, {
+          username,
           password,
         })
-
         setAuthState({
-          token: res.token,
+          token: res.data.token,
           authenticated: true,
+          username: res.data.username,
         })
 
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`
 
         await SecureStore.setItemAsync(TOKEN_KEY, res.data.token)
+        await SecureStore.setItemAsync(USER_NAME, res.data.username)
         return res
       } else {
         return { error: true, message: 'Fill all the fields' }
@@ -87,11 +70,11 @@ export const AuthProvider = ({ children }) => {
     setAuthState({
       token: null,
       authenticated: false,
+      username: null,
     })
   }
 
   const value = {
-    onRegister: register,
     onLogin: login,
     onLogout: logout,
     authState,

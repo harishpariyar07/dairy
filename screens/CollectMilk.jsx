@@ -3,217 +3,319 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-} from 'react-native';
-import React, { useLayoutEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { Button, Searchbar, SegmentedButtons } from 'react-native-paper';
-import { Table, Row } from 'react-native-table-component';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import HideWithKeyboard from 'react-native-hide-with-keyboard';
-import { SafeAreaView } from 'react-native-safe-area-context'
+  Dimensions,
+  Platform,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import { Button, IconButton, MD3Colors, Searchbar } from 'react-native-paper'
+import { Table, Row } from 'react-native-table-component'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import HideWithKeyboard from 'react-native-hide-with-keyboard'
+import { SafeAreaView } from 'react-native'
+import { URL } from '@env'
+import axios from 'axios'
+import { useAuth } from '../context/AuthContext'
+
+const windowWidth = Dimensions.get('window').width
+
+const tableHead = [
+  { label: '#', width: 0.1 * windowWidth },
+  { label: 'Id', width: 0.1 * windowWidth },
+  { label: 'Name', width: 0.3 * windowWidth },
+  { label: 'Qty', width: 0.1 * windowWidth },
+  { label: 'Fat', width: 0.1 * windowWidth },
+  { label: 'Snf', width: 0.1 * windowWidth },
+  { label: 'Amt', width: 0.2 * windowWidth },
+]
+
+const tableHeadWidthArr = tableHead.map((header) => header.width)
 
 const CollectMilk = () => {
+  const [isPickerShow, setIsPickerShow] = useState(false)
+  const [date, setDate] = useState(new Date(Date.now()))
+  const [dateString, setDateString] = useState(
+    `${date.toUTCString().split(' ').slice(1, 4).join(' ')}`
+  )
+  const [tableData, setTableDate] = useState([])
+  const [search, setSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const navigator = useNavigation()
+  const [selectedOption, setSelectedOption] = useState(date.getTime() < 12 ? 'Morning' : 'Evening')
+  const {
+    authState: { username },
+  } = useAuth()
 
-  const [isPickerShow, setIsPickerShow] = useState(false);
-  const [date, setDate] = useState(new Date(Date.now()));
-  const [dateString, setDateString] = useState('Select Date')
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        if (username) {
+          setIsLoading(true)
+          const collections = await axios.get(
+            `${URL}user/${username}/collection?date=${date}&shift=${selectedOption}`
+          )
+          setTableDate(collections.data)
+          setIsLoading(false)
+        }
+      } catch (error) {
+        setIsLoading(false)
+        console.log(error)
+      }
+    }
+
+    fetchCollections()
+  }, [date, selectedOption])
 
   const showPicker = () => {
-    setIsPickerShow(true);
-  };
+    setIsPickerShow(true)
+  }
 
   const onChange = (event, value) => {
-    setDate(value);
-    const dateInStr = date.toUTCString().split(' ').slice(1, 4).join(' ');
+    setDate(value)
+    const dateInStr = date.toUTCString().split(' ').slice(1, 4).join(' ')
     setDateString(dateInStr)
     if (Platform.OS === 'android') {
-      setIsPickerShow(false);
+      setTimeout(() => setIsPickerShow(false), 200)
     }
-  };
+  }
 
-  const navigator = useNavigation();
-  useLayoutEffect(() => {
-    navigator.setOptions({ headerShown: false });
-  }, [navigator]);
+  // just to avoid error caused by unserialized date object
+  const navigateToAddCollection = () => {
+    const dateStringToPass = date.toISOString()
+    navigator.navigate('AddCollection', {
+      dateString: dateStringToPass,
+      shift: selectedOption,
+    })
+  }
 
-  const tableHead = [
-    { label: 'Date', width: 65 },
-    { label: 'S', width: 20 },
-    { label: 'Name', width: 65 },
-    { label: 'Id', width: 36 },
-    { label: 'Type', width: 30 },
-    { label: 'Qty', width: 40 },
-    { label: 'Rate', width: 40 },
-    { label: 'Amt', width: 50 }
-  ];
-
-  const tableData = [
-    ['01/01/21', 'A', 'Arvind', '100', 'C', '10', '50', '500'],
-    ['01/01/21', 'A', 'Bhola', '101', 'C', '14', '45', '300'],
-    ['01/01/21', 'A', 'Chetan', '102', 'B', '12', '50', '600'],
-    ['01/01/21', 'A', 'Dinesh', '103', 'C', '10', '50', '500'],
-    ['01/01/21', 'A', 'Eknath', '104', 'C', '10', '50', '500'],
-    ['01/01/21', 'A', 'Firoz', '105', 'C', '10', '50', '500']
-  ];
-
-  const [search, setSearch] = useState('');
-  const [filteredTableData, setFilteredTableData] = useState(tableData);
+  const Item = ({ farmerName, farmerId, qty, rate, fat, snf, amount, id }) => (
+    <View style={styles.item}>
+      <IconButton
+        icon='pencil'
+        iconColor={MD3Colors.error50}
+        size={20}
+        style={{ width: 0.08 * windowWidth }}
+        onPress={() => {
+          const dateStringToPass = date.toISOString()
+          navigator.navigate('EditCollection', {
+            id,
+            username,
+            farmerId,
+            farmerName,
+            qty,
+            fat,
+            snf,
+            amount,
+            rate,
+            shift: selectedOption,
+            dateInStr: dateStringToPass,
+          })
+        }}
+      />
+      <Text style={{ width: 0.1 * windowWidth, textAlign: 'center' }}>{farmerId}</Text>
+      <Text style={{ width: 0.3 * windowWidth, textAlign: 'center', padding: 5 }}>
+        {farmerName}
+      </Text>
+      <Text style={{ width: 0.1 * windowWidth, textAlign: 'center' }}>{qty}</Text>
+      <Text style={{ width: 0.1 * windowWidth, textAlign: 'center' }}>{fat}</Text>
+      <Text style={{ width: 0.1 * windowWidth, textAlign: 'center' }}>{snf}</Text>
+      <Text style={{ width: 0.2 * windowWidth, textAlign: 'center' }}>{amount}</Text>
+    </View>
+  )
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.container1}>
         <Searchbar
-          placeholder="Search by name"
+          placeholder='Search by name'
           onChangeText={(e) => {
-            setSearch(e);
-            setFilteredTableData(
-              tableData.filter((row) =>
-                row[2].toLowerCase().includes(e.toLowerCase())
-              )
-            );
+            setSearch(e)
           }}
           value={search}
           style={styles.searchBar}
         />
       </View>
 
+      <View style={styles.upperContainer}>
+        <View style={styles.calender}>
+          {/* The button that used to trigger the date picker */}
+          {!isPickerShow && (
+            <View style={styles.btnContainer}>
+              <Button
+                mode='text'
+                icon='calendar-today'
+                style={styles.buttonPicker}
+                onPress={showPicker}
+              >
+                <Text style={{ fontSize: 16 }}>{dateString}</Text>
+              </Button>
+            </View>
+          )}
 
+          {/* The date picker */}
+          {isPickerShow && (
+            <DateTimePicker
+              value={date}
+              mode={'date'}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              is24Hour={false}
+              onChange={onChange}
+              style={styles.datePicker}
+            />
+          )}
+        </View>
 
-      <HideWithKeyboard style={styles.calender}>
+        <View style={styles.iconButtonContainer}>
+          <TouchableOpacity
+            style={[styles.iconButton, selectedOption === 'Morning' && styles.selectedOption]}
+            onPress={() => {
+              setSelectedOption('Morning')
+            }}
+          >
+            <IconButton
+              icon='weather-sunny' // Choose an appropriate icon name
+              iconColor={'white'}
+              onPress={() => setSelectedOption('Morning')}
+            />
+            <Text style={{ color: '#fff' }}>Morning</Text>
+          </TouchableOpacity>
 
-        {/* The button that used to trigger the date picker */}
-        {!isPickerShow && (
-          <View style={styles.btnContainer}>
-            <Button
-              mode='text'
-              icon='calendar-today'
-              style={styles.button}
-              onPress={showPicker}
-            >
-              <Text>{dateString}</Text>
-            </Button>
+          <TouchableOpacity
+            style={[styles.iconButton, selectedOption === 'Evening' && styles.selectedOption]}
+            onPress={() => setSelectedOption('Evening')}
+          >
+            <IconButton
+              icon='weather-night' // Choose an appropriate icon name
+              iconColor={'white'}
+              onPress={() => setSelectedOption('Evening')}
+            />
+            <Text style={{ color: '#fff' }}>Evening</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.container2}>
+        <Row
+          data={tableHead.map((header) => header.label)}
+          widthArr={tableHeadWidthArr}
+          style={styles.head}
+          textStyle={{ ...styles.headText }}
+          text
+        />
+
+        {isLoading && (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 20 }}>Loading Collections...</Text>
           </View>
         )}
 
-        {/* The date picker */}
-        {isPickerShow && (
-          <DateTimePicker
-            value={date}
-            mode={'date'}
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            is24Hour={true}
-            onChange={onChange}
-            style={styles.datePicker}
-          />
+        {isLoading === false && tableData.length === 0 && (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 20 }}>No Collections Found</Text>
+          </View>
         )}
 
-
-        <View style={{ flexDirection: 'row', width: 170}}>
-          <SegmentedButtons
-            density='small'
-            buttons={[
-              {
-                value: 'Cow',
-                label: 'Cow',
-              },
-              {
-                value: 'Buffallo',
-                label: 'Buffallo',
-              }
-            ]}
-          />
-        </View>
-
-
-      </HideWithKeyboard>
-
-
-      <View style={styles.container2}>
-        <ScrollView>
-          <Table style={styles.table}>
-            <Row
-              data={tableHead.map((header) => header.label)}
-              widthArr={tableHead.map((header) => header.width)}
-              style={styles.head}
-              textStyle={styles.headText}
-            />
-            {filteredTableData.map((rowData, index) => (
-              <Row
-                key={index}
-                data={rowData}
-                style={[
-                  styles.row,
-                  index % 2 === 0 && styles.evenRow,
-                  index === 0 && styles.firstRow
-                ]}
-                textStyle={styles.text}
-                widthArr={tableHead.map((header) => header.width)}
+        {isLoading === false && tableData.length > 0 && (
+          <FlatList
+            data={tableData.filter(({ farmerName }) =>
+              farmerName.toLowerCase().includes(search.toLowerCase())
+            )}
+            renderItem={({ item }) => (
+              <Item
+                farmerId={item.farmerId}
+                farmerName={item.farmerName}
+                qty={item.qty}
+                fat={item.fat}
+                snf={item.snf}
+                amount={item.amount}
+                id={item._id}
+                rate={item.rate}
               />
-            ))}
-          </Table>
-        </ScrollView>
+            )}
+            keyExtractor={(item) => item._id}
+          />
+        )}
       </View>
 
       <HideWithKeyboard style={styles.container3}>
         <Button
-          icon="plus"
-          mode="contained"
+          icon='plus'
+          mode='contained'
           style={styles.button}
-          buttonColor="#77b300"
-          onPress={() => navigator.navigate('AddCollection')}
+          buttonColor='#77b300'
+          onPress={() => navigateToAddCollection()}
         >
           Add Collection
         </Button>
-
-        <Button
-          icon="share"
-          mode="contained"
-          style={styles.shareButton}
-          buttonColor="#6987d0"
-        >
-          Export and share
-        </Button>
       </HideWithKeyboard>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  upperContainer: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 10,
+  },
+  iconButtonContainer: {
+    flex: 0.6,
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  table: {
-    width: '100%',
+  calender: {
+    flex: 0.4,
+    paddingLeft: 10,
+  },
+  iconButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'gray',
+  },
+  selectedOption: {
+    backgroundColor: '#77b300',
   },
   head: {
-    height: 30,
     backgroundColor: '#6987d0',
+    padding: 15,
   },
   headText: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 12,
-    fontFamily: 'InterB'
+    fontSize: 14,
+    fontFamily: 'InterB',
   },
-  row: {
-    height: 45,
+  item: {
+    backgroundColor: 'white',
+    borderColor: 'gray',
     borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  evenRow: {
-    backgroundColor: '#f9f9f9',
-  },
-  firstRow: {
-    borderTopWidth: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   text: {
     margin: 6,
     textAlign: 'center',
     fontSize: 12,
-    fontFamily: 'Inter'
+    fontFamily: 'Inter',
+  },
+  buttonPicker: {
+    width: '100%',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     width: '90%',
@@ -222,23 +324,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  shareButton: {
-    width: '90%',
-    height: 50,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   searchBar: {
-    margin: 10,
+    width: '90%',
     backgroundColor: '#fff',
     borderColor: '#edebeb',
     borderWidth: 2,
   },
   container1: {
-    flex: 1,
     width: '100%',
-    justifyContent: 'center',
+    margin: 10,
     alignItems: 'center',
   },
   container3: {
@@ -250,20 +344,13 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   container2: {
-    flex: 3.8,
-    width: '95%',
-    top: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 8,
+    width: windowWidth,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+    marginBottom: 20,
   },
-  calender: {
-    flex: 0.3,
-    alignItems: 'center',
-    top: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 40
-  },
+
   // This only works on iOS
   datePicker: {
     width: 320,
@@ -272,6 +359,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-});
+})
 
-export default CollectMilk;
+export default CollectMilk

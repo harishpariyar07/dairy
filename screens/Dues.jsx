@@ -1,105 +1,133 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React, { useLayoutEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Table, Row } from 'react-native-table-component';
-import { Button } from 'react-native-paper'
-
-const DATA = [
-  {
-    "farmerID": "100",
-    "farmerName": "Ayush",
-    "netBalance": "5000"
-  },
-  {
-    "farmerID": "101",
-    "farmerName": "Bhola",
-    "netBalance": "3000"
-  }
-]
-
-const totalBal = DATA.reduce((acc, item) => acc + parseInt(item.netBalance), 0)
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Table, Row } from 'react-native-table-component'
+import axios from 'axios'
+import { URL } from '@env'
+import { useAuth } from '../context/AuthContext'
+import { useNavigation } from '@react-navigation/native'
 
 const Dues = () => {
+  const [data, setData] = useState([])
+  const [totalBalance, setTotalBalance] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const {
+    authState: { username },
+  } = useAuth()
+  const navigator = useNavigation()
+
+  useEffect(() => {
+    const fetchAllFarmers = async () => {
+      try {
+        if (username) {
+          setIsLoading(true)
+          const dues = await axios.get(`${URL}user/${username}/dues`)
+          const duesArray = dues.data.map((due) => ({
+            farmerName: due.farmerName,
+            farmerId: due.farmerId,
+            netBalance: due.dues,
+          }))
+
+          setData(duesArray)
+          const total = duesArray.reduce((acc, item) => acc + parseFloat(item.netBalance), 0)
+          setTotalBalance(total.toFixed(2))
+          setIsLoading(false)
+        }
+      } catch (error) {
+        alert('Only Admin can access this page')
+        setIsLoading(false)
+        navigator.goBack()
+        console.log(error)
+      }
+    }
+
+    fetchAllFarmers()
+  }, [])
 
   const tableHead = [
-    { label: 'Farmer Id', width: 100 },
-    { label: 'Farmer Name', width: 130 },
-    { label: 'Net Balance', width: 100 },
-  ];
-  const tableData = DATA.map((item) => {
-    return [item.farmerID, item.farmerName, item.netBalance]
+    { label: 'Farmer Id', flex: 0.2 },
+    { label: 'Farmer Name', flex: 0.5 },
+    { label: 'Net Balance', flex: 0.3 },
+  ]
+  const tableData = data.map((item) => {
+    return [item.farmerId, item.farmerName, item.netBalance]
   })
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Row
+        data={tableHead.map((header) => header.label)}
+        flexArr={tableHead.map((header) => header.flex)}
+        style={styles.head}
+        textStyle={styles.headText}
+      />
+      {isLoading && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 20 }}>Loading Farmer Dues...</Text>
+        </View>
+      )}
 
-      <View style={styles.tableCnt}>
-        <Table style={styles.table}>
-          <Row
-            data={tableHead.map((header) => header.label)}
-            widthArr={tableHead.map((header) => header.width)}
-            style={styles.head}
-            textStyle={styles.headText}
-          />
-          {tableData.map((rowData, index) => (
-            <Row
-              key={index}
-              data={rowData}
-              style={[
-                styles.row,
-                index % 2 === 0 && styles.evenRow,
-                index === 0 && styles.firstRow
-              ]}
-              textStyle={styles.text}
-              widthArr={tableHead.map((header) => header.width)}
-            />
-          ))}
-        </Table>
-      </View>
+      {isLoading === false && tableData.length === 0 && (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 20 }}>No Farmers Found</Text>
+        </View>
+      )}
 
-
-
+      <ScrollView style={styles.tableCnt}>
+        {isLoading === false && tableData.length > 0 && (
+          <Table style={styles.table}>
+            {tableData.map((rowData, index) => (
+              <Row
+                key={index}
+                data={rowData}
+                style={[
+                  styles.row,
+                  index % 2 === 0 && styles.evenRow,
+                  index === 0 && styles.firstRow,
+                ]}
+                textStyle={styles.text}
+                flexArr={tableHead.map((header) => header.flex)}
+              />
+            ))}
+          </Table>
+        )}
+      </ScrollView>
 
       <View style={styles.btnCnt}>
-        <Text style={styles.totalAmt}>
-          TOTAL AMOUNT : {totalBal}
-        </Text>
-        < Button
-          mode="contained"
-          style={styles.shareButton}
-          buttonColor="#6987d0"
-        >
-          Clear All Dues
-        </Button>
+        <Text style={styles.totalAmt}>TOTAL AMOUNT : {totalBalance}</Text>
       </View>
-
-    </SafeAreaView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    justifyContent: 'space-between',
+  },
+  tableCnt: {
+    flex: 1,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
   },
   table: {
     width: '100%',
   },
   head: {
-    height: 30,
     backgroundColor: '#6987d0',
+    padding: 15,
   },
   headText: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 12,
-    fontFamily: 'InterB'
+    fontSize: 14,
+    fontFamily: 'InterB',
   },
   row: {
-    height: 45,
     borderBottomWidth: 1,
     borderColor: '#ccc',
+    padding: 5,
   },
   evenRow: {
     backgroundColor: '#f9f9f9',
@@ -110,24 +138,20 @@ const styles = StyleSheet.create({
   text: {
     margin: 6,
     textAlign: 'center',
-    fontSize: 12,
-    fontFamily: 'Inter'
-  },
-  tableCnt: {
-    flex: 5
+    fontSize: 13,
+    fontFamily: 'Inter',
   },
   totalAmt: {
     fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: 'bold',
-    textAlign: 'center', 
+    textAlign: 'center',
     marginTop: 10,
-    marginBottom: 10
   },
   btnCnt: {
-    flex: 0.85,
+    flex: 0.1,
     width: '90%',
-  }
+  },
 })
 
 export default Dues
