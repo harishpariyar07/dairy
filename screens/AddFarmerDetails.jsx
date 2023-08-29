@@ -2,11 +2,10 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TextInput, Button, useTheme } from 'react-native-paper'
 import DropDown from 'react-native-paper-dropdown'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView } from 'react-native'
 import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
 import { URL } from '@env'
-import { useAuth } from '../context/AuthContext'
 
 const farmerLevelOptions = [
   { value: 1, label: 'Level 1' },
@@ -22,13 +21,12 @@ const paymentModeOptions = [
   { value: 'BANK', label: 'Bank' },
 ]
 
-const AddFarmerDetails = () => {
+const AddFarmerDetails = ({ route }) => {
   const [farmerId, setFarmerId] = useState(-1)
-  const [rfid, setRfId] = useState('')
   const [mobileNumber, setMobileNumber] = useState('')
   const [farmerName, setFarmerName] = useState('')
-  const [farmerLevel, setFarmerLevel] = useState(0)
-  const [fixedRate, setFixedRate] = useState(0)
+  const [farmerLevel, setFarmerLevel] = useState(null)
+  const [fixedRate, setFixedRate] = useState(null)
   const [paymentMode, setPaymentMode] = useState('')
   const [bankName, setBankName] = useState('')
   const [accountNumber, setAccountNumber] = useState('')
@@ -36,9 +34,8 @@ const AddFarmerDetails = () => {
   const [showDropDown1, setShowDropDown1] = useState(false)
   const [showDropDown2, setShowDropDown2] = useState(false)
   const navigator = useNavigation()
-  const {
-    authState: { username },
-  } = useAuth()
+  const { username } = route.params
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const fetchLatestFarmerId = async () => {
@@ -58,9 +55,9 @@ const AddFarmerDetails = () => {
   const addFarmer = async () => {
     try {
       if (username) {
+        setIsLoading(true)
         const res = await axios.post(`${URL}user/${username}/farmer`, {
           farmerId,
-          rfid,
           mobileNumber,
           farmerName,
           farmerLevel,
@@ -80,11 +77,12 @@ const AddFarmerDetails = () => {
         setFixedRate(0)
         setMobileNumber('')
         setPaymentMode('')
-        setRfId('')
         setPaymentMode('')
+        setIsLoading(false)
         alert('Farmer Details Saved Successfully')
       }
     } catch (error) {
+      setIsLoading(false)
       alert('Error in saving farmer details')
       console.log(error)
     }
@@ -95,6 +93,7 @@ const AddFarmerDetails = () => {
       <ScrollView>
         {farmerId >= 1 && (
           <TextInput
+            placeholderTextColor='black'
             label='Farmer ID'
             defaultValue={String(farmerId)}
             editable={false}
@@ -102,22 +101,17 @@ const AddFarmerDetails = () => {
             style={styles.textInput}
           />
         )}
-
         <TextInput
-          label='RFID'
-          value={rfid}
-          onChangeText={(id) => setRfId(id)}
-          selectionColor='black'
-          style={styles.textInput}
-        />
-        <TextInput
+          placeholderTextColor='black'
           label='Mobile Number'
           value={mobileNumber}
           onChangeText={(num) => setMobileNumber(num)}
           selectionColor='black'
           style={styles.textInput}
+          keyboardType='numeric'
         />
         <TextInput
+          placeholderTextColor='black'
           label='Farmer Name'
           value={farmerName}
           onChangeText={(name) => setFarmerName(name)}
@@ -147,8 +141,9 @@ const AddFarmerDetails = () => {
 
         {farmerLevel === 5 && (
           <TextInput
+            placeholderTextColor='black'
             label='Fixed Rate'
-            value={fixedRate.toString()}
+            value={fixedRate > 0 ? fixedRate.toString() : ''}
             onChangeText={(rate) => setFixedRate(rate)}
             selectionColor='black'
             style={styles.textInput}
@@ -178,6 +173,7 @@ const AddFarmerDetails = () => {
         />
 
         <TextInput
+          placeholderTextColor='black'
           label='Bank Name'
           value={bankName}
           onChangeText={(name) => setBankName(name)}
@@ -185,6 +181,7 @@ const AddFarmerDetails = () => {
           style={styles.textInput}
         />
         <TextInput
+          placeholderTextColor='black'
           label='Bank Account Number'
           value={accountNumber}
           onChangeText={(acc) => setAccountNumber(acc)}
@@ -192,6 +189,7 @@ const AddFarmerDetails = () => {
           style={styles.textInput}
         />
         <TextInput
+          placeholderTextColor='black'
           label='Bank Holder Name'
           value={bankHolderName}
           onChangeText={(name) => setBankHolderName(name)}
@@ -205,8 +203,9 @@ const AddFarmerDetails = () => {
         mode='contained'
         onPress={() => addFarmer()}
         style={styles.button}
+        disabled={isLoading}
       >
-        Save
+        {isLoading ? 'Saving...' : 'Save'}
       </Button>
     </SafeAreaView>
   )
